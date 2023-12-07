@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int           @id @default(autoincrement()) @db.Int()
+  name          String        @db.VarChar(150)
+  email         String        @unique @db.VarChar(200)
+  password      String        @db.VarChar(100)
+  username      String        @unique @db.VarChar(200)
+  phone         String        @unique @default("") @db.VarChar(50)
+  bio           String        @default("") @db.VarChar(1000)
+  gender        String        @db.VarChar(50)
+  birthday      DateTime      @db.Date
+  country       String        @default("") @db.VarChar(80)
+  estate        String        @default("") @db.VarChar(100)
+  city          String        @default("") @db.VarChar(100)
+  refresh_token RefreshToken?
+  post          Post[]
+  likes         Likes[]
+
+  @@map("user")
+}
+
+model RefreshToken {
+  id        String @id @default(uuid())
+  expiresIn Int
+  user      User   @relation(fields: [userId], references: [id])
+  userId    Int    @unique
+
+  @@map("refresh_token")
+}
+
+model Post {
+  id          Int      @id @default(autoincrement()) @db.Int()
+  autor       User     @relation(fields: [autor_id], references: [id])
+  autor_id    Int
+  type        String   @db.VarChar(50)
+  file        String?  @default(dbgenerated("NULL")) @db.VarChar(150)
+  title       String   @db.VarChar(200)
+  description String   @db.Text()
+  created     DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @db.DateTime
+  favorites   Int      @default(0) @db.Int()
+  deslikes    Int      @default(0) @db.Int()
+  shares      Int      @default(0) @db.Int()
+  video       Video?   @relation(fields: [video_id], references: [id])
+  video_id    Int?     @unique @default(dbgenerated("NULL")) @db.Int
+  likes       Likes[]
+}
+
+model Video {
+  id     Int     @id @default(autoincrement()) @db.Int()
+  thumb  String  @db.VarChar(150)
+  v1080p String? @default(dbgenerated("NULL")) @db.VarChar(150)
+  v720p  String? @default(dbgenerated("NULL")) @db.VarChar(150)
+  v480p  String? @default(dbgenerated("NULL")) @db.VarChar(150)
+  v144p  String? @default(dbgenerated("NULL")) @db.VarChar(150)
+
+  post Post?
+}
+
+model Likes {
+  id      String @id @default(uuid())
+  post    Post   @relation(fields: [post_id], references: [id])
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id Int
+  post_id Int
+}

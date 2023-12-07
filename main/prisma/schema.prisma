@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Country {
+  id      Int      @id @default(autoincrement()) @db.Integer
+  name    String   @db.Text()
+  abbr    String   @db.VarChar(3)
+  sort    Int      @default(0) @db.Integer
+  created DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamptz()
+
+  @@map("country")
+}
+
+model User {
+  id            Int           @id @default(autoincrement()) @db.Integer
+  name          String        @db.VarChar(150)
+  email         String        @unique @db.VarChar(200)
+  password      String        @db.VarChar(100)
+  username      String        @unique @db.VarChar(200)
+  phone         String?       @unique @db.VarChar(50)
+  bio           String        @default("") @db.VarChar(1000)
+  gender        String        @db.VarChar(50)
+  birthday      DateTime      @db.Date
+  country       String        @default("") @db.VarChar(80)
+  estate        String        @default("") @db.VarChar(100)
+  city          String        @default("") @db.VarChar(100)
+  created       DateTime      @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamptz()
+  refresh_token RefreshToken?
+  post          Post[]
+  likes         Likes[]
+
+  @@map("user")
+}
+
+model RefreshToken {
+  id        String @id @default(uuid())
+  expiresIn Int
+  user      User   @relation(fields: [userId], references: [id])
+  userId    Int    @unique
+
+  @@map("refresh_token")
+}
+
+model Post {
+  id          Int      @id @default(autoincrement()) @db.Integer
+  autor       User     @relation(fields: [autor_id], references: [id])
+  autor_id    Int
+  type        String   @db.VarChar(50)
+  file        String?  @default(dbgenerated("NULL")) @db.VarChar(150)
+  title       String   @db.VarChar(200)
+  description String   @db.Text()
+  created     DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamptz()
+  favorites   Int      @default(0) @db.Integer
+  deslikes    Int      @default(0) @db.Integer
+  shares      Int      @default(0) @db.Integer
+  video       Video?   @relation(fields: [video_id], references: [id])
+  video_id    Int?     @unique @default(dbgenerated("NULL")) @db.Integer
+  likes       Likes[]
+
+  @@map("post")
+}
+
+model Video {
+  id     Int     @id @default(autoincrement()) @db.Integer
+  thumb  String  @db.VarChar(150)
+  v1080p String? @default(dbgenerated("NULL")) @db.VarChar(150)
+  v720p  String? @default(dbgenerated("NULL")) @db.VarChar(150)
+  v480p  String? @default(dbgenerated("NULL")) @db.VarChar(150)
+  v144p  String? @default(dbgenerated("NULL")) @db.VarChar(150)
+
+  post Post?
+
+  @@map("video")
+}
+
+model Likes {
+  id      String   @id @default(uuid())
+  post    Post     @relation(fields: [post_id], references: [id])
+  user    User     @relation(fields: [user_id], references: [id])
+  user_id Int
+  post_id Int
+  created DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamptz()
+
+  @@map("likes")
+}
