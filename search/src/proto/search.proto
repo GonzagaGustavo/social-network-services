@@ -1,0 +1,13 @@
+syntax = "proto3"
+
+service Search {
+    rpc get (Empty) returns (SearchGet) {}
+}
+
+message Empty {}
+
+message SearchGet {
+    string id = 1;
+    int32 user_id = 2;
+    string search = 3;
+}
