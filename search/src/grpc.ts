@@ -1,6 +1,9 @@
-import Mali from "mali";
 import path from "path";
 import logger from "./logger";
+import { get } from "./consumers";
+import { secret_token } from "./config";
+import { loadSync } from "@grpc/proto-loader";
+import { Server, loadPackageDefinition } from "@grpc/grpc-js";
 
 const options = {
   keepCase: true,
@@ -9,22 +12,14 @@ const options = {
   defaults: true,
   oneofs: true,
 };
-const searchProtoFile = path.join("./proto/search.proto");
 
-const app = new Mali();
+const searchProtoFile = path.join(__dirname + "/proto/search.proto");
 
-app.addService(searchProtoFile, "Search", options);
+const protoLoader = loadSync(searchProtoFile, options);
+const packageDefinition = loadPackageDefinition(protoLoader);
 
-app.use(async (context: any, next: any) => {
-  logger.child({ grpc: "grpc" }).info(`Receiving ${context.fullName}`);
+const server = new Server();
 
-  return next();
-});
+server.addService(packageDefinition.Search.service, { get: get });
 
-app.on("error", (error) => {
-  if (!error.code) {
-    logger.fatal(error);
-  }
-});
-
-export default app;
+export default server;
