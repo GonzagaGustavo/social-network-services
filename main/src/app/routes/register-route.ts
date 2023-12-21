@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
 import Controller, { HttpRequest } from "../../interfaces/controller";
 import multer from "multer";
+import MicroServiceController from "../../interfaces/controller/microservice";
 
 type Params = {
   get?: object | null;
@@ -9,13 +10,13 @@ type Params = {
 type RegisterRouteInput = {
   route: string;
   params?: Params;
-  controller: Controller<any>;
+  controller: Controller<any> | MicroServiceController;
 };
 // (httpRequest: HttpRequest) => Promise<ResponseObject>;
 
 type RouteFunction = {
   routeFunctionName: string;
-  controller: Controller<any>;
+  controller: Controller<any> | MicroServiceController;
 };
 
 export default class RegisterRoute {

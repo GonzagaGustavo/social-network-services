@@ -16,7 +16,7 @@ const options = {
 const searchProtoFile = path.join(__dirname + "/proto/search.proto");
 
 const protoLoader = loadSync(searchProtoFile, options);
-const packageDefinition = loadPackageDefinition(protoLoader);
+const packageDefinition: any = loadPackageDefinition(protoLoader);
 
 const server = new Server();
 

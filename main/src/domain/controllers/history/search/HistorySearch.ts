@@ -1,14 +1,10 @@
 import path from "path";
-import Controller, {
-  HttpRequest,
-  ResponseObject,
-} from "../../../../interfaces/controller";
+import { HttpRequest, ResponseObject } from "../../../../interfaces/controller";
 import { loadSync } from "@grpc/proto-loader";
 import { loadPackageDefinition, credentials } from "@grpc/grpc-js";
+import MicroServiceController from "../../../../interfaces/controller/microservice";
 
-class Empty {}
-
-export default class SearchHistoryController extends Controller<Empty> {
+export default class SearchHistoryController extends MicroServiceController {
   async GET(httpRequest: HttpRequest): Promise<ResponseObject> {
     const userId = httpRequest.query.userId;
 
