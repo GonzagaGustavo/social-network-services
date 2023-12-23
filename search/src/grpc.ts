@@ -1,7 +1,7 @@
 import path from "path";
-import { get } from "./consumers";
 import { loadSync } from "@grpc/proto-loader";
 import { Server, loadPackageDefinition } from "@grpc/grpc-js";
+import Consumer from "./consumers";
 
 const options = {
   keepCase: true,
@@ -18,6 +18,7 @@ const packageDefinition: any = loadPackageDefinition(protoLoader);
 
 const server = new Server();
 
-server.addService(packageDefinition.Search.service, { get: get });
+const consumer: any = new Consumer();
+server.addService(packageDefinition.Search.service, consumer);
 
 export default server;

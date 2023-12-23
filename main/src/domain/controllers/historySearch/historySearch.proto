@@ -7,7 +7,6 @@ service Search {
 message Empty {}
 
 message SearchGet {
-    string id = 1;
-    int32 user_id = 2;
-    string search = 3;
+    int32 sort = 1;
+    string search = 2;
 }

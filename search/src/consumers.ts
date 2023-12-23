@@ -1,5 +1,9 @@
 import { ServerUnaryCall } from "@grpc/grpc-js";
 import logger from "./logger";
+import ConsumerTools from "./abstract/consumer";
+import UseCase from "./domain/usecase";
+import SearchRepository from "./domain/repository";
+import { Filter, initialFilter } from "./abstract/repository";
 
 interface MyRequest {}
 interface MyResponse {
@@ -8,28 +12,32 @@ interface MyResponse {
   search: string;
 }
 
-export async function get(
-  call: ServerUnaryCall<MyRequest, MyResponse>,
-  callback: any
-) {
-  callback(null, {
-    id: "213",
-    user_id: 1,
-    search: "thought that I",
-  });
-  // call.on("data", (data) => {
-  //   logger.info("data", data);
-  // });
+export default class Consumer extends ConsumerTools<UseCase> {
+  useCase: UseCase;
 
-  // call.write({
-  //   id: "213",
-  //   user_id: 1,
-  //   search: "thought that I",
-  // });
+  constructor() {
+    super();
+    const repository = new SearchRepository();
+    this.useCase = new UseCase(repository);
+  }
 
-  // call.on("end", () => {
-  //   logger.info("end");
-  // });
+  async get(call: any, callback: any): Promise<void> {
+    const data = call.request;
+    if (!data || !data.user_id) {
+      callback(null, { error: "user_id invalido" });
+      return;
+    }
 
-  // call.end();
+    const filter: Filter = {
+      ...initialFilter,
+      where: `s.user_id=${data.user_id}`,
+    };
+    const searchHistory = await this.useCase.read(filter);
+
+    callback(null, searchHistory);
+  }
+
+  create(call: any, callback: any): void {}
+  delete(call: any, callback: any): void {}
+  update(call: any, callback: any): void {}
 }

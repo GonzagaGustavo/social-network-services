@@ -15,6 +15,7 @@ export default class SearchHistoryController extends MicroServiceController<{}> 
         const response = this.res.serverError(e);
         res.status(response.statusCode).send(response.body);
       } else {
+        console.log(newData);
         const response = this.res.ok(newData);
         res.status(response.statusCode).send(response.body);
       }
