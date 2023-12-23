@@ -10,13 +10,13 @@ type Params = {
 type RegisterRouteInput = {
   route: string;
   params?: Params;
-  controller: Controller<any> | MicroServiceController;
+  controller: Controller<any> | MicroServiceController<any>;
 };
 // (httpRequest: HttpRequest) => Promise<ResponseObject>;
 
 type RouteFunction = {
   routeFunctionName: string;
-  controller: Controller<any> | MicroServiceController;
+  controller: Controller<any> | MicroServiceController<any>;
 };
 
 export default class RegisterRoute {
@@ -95,9 +95,7 @@ export default class RegisterRoute {
         query: req.query,
         user: req.user,
       };
-      const response = await _controller[routeFunctionName](httpRequest);
-
-      res.status(response.statusCode).json(response.body);
+      await _controller[routeFunctionName](httpRequest, res);
     };
   }
 }

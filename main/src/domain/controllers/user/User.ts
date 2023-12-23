@@ -1,3 +1,4 @@
+import { Response } from "express";
 import Controller, {
   HttpRequest,
   ResponseObject,
@@ -17,7 +18,7 @@ export default class UserController extends Controller<UserUseCase> {
     this.useCase = new UserUseCase(this.repository);
   }
 
-  async GET(httpRequest: HttpRequest): Promise<ResponseObject> {
+  async GET(httpRequest: HttpRequest, res: Response): Promise<void> {
     try {
       const input: Filter = {
         page: httpRequest.query.page ? +httpRequest.query.page : 1,
@@ -30,13 +31,17 @@ export default class UserController extends Controller<UserUseCase> {
 
       const users = await this.useCase.read(input);
 
-      return this.res.ok(users.map((user) => this.res.removeUnderline(user)));
+      const response = this.res.ok(
+        users.map((user) => this.res.removeUnderline(user))
+      );
+      res.status(response.statusCode).send(response.body);
     } catch (err) {
-      return this.res.badRequest(err);
+      const response = this.res.badRequest(err);
+      res.status(response.statusCode).send(response.body);
     }
   }
 
-  async POST(httpRequest: HttpRequest): Promise<ResponseObject> {
+  async POST(httpRequest: HttpRequest, res: Response): Promise<void> {
     try {
       const input: CreateUserInput = {
         username: httpRequest.body.username,
@@ -50,14 +55,16 @@ export default class UserController extends Controller<UserUseCase> {
 
       const user = await this.useCase.create(input);
 
-      return this.res.ok({ success: true });
+      const response = this.res.ok({ success: true });
+      res.status(response.statusCode).send(response.body);
     } catch (err) {
       console.error(err);
-      return this.res.badRequest(err);
+      const response = this.res.badRequest(err);
+      res.status(response.statusCode).send(response.body);
     }
   }
 
-  async PUT(httpRequest: HttpRequest): Promise<ResponseObject> {
+  async PUT(httpRequest: HttpRequest, res: Response): Promise<void> {
     if (httpRequest.user && httpRequest.user.id === +httpRequest.params.id) {
       try {
         const input: UpdateUserInput = {
@@ -77,26 +84,32 @@ export default class UserController extends Controller<UserUseCase> {
 
         const output = await this.useCase.update(input);
 
-        return this.res.ok(output);
+        const response = this.res.ok(output);
+        res.status(response.statusCode).send(response.body);
       } catch (err) {
-        return this.res.badRequest(err);
+        const response = this.res.badRequest(err);
+        res.status(response.statusCode).send(response.body);
       }
     } else {
-      return this.res.unauthorizedError();
+      const response = this.res.unauthorizedError();
+      res.status(response.statusCode).send(response.body);
     }
   }
 
-  async DELETE(httpRequest: HttpRequest): Promise<ResponseObject> {
+  async DELETE(httpRequest: HttpRequest, res: Response): Promise<void> {
     if (httpRequest.user && httpRequest.user.id === +httpRequest.params.id) {
       try {
         const deleted = await this.useCase.remove(+httpRequest.params.id);
 
-        return this.res.ok(deleted);
+        const response = this.res.ok(deleted);
+        res.status(response.statusCode).send(response.body);
       } catch (err) {
-        return this.res.badRequest(err);
+        const response = this.res.badRequest(err);
+        res.status(response.statusCode).send(response.body);
       }
     } else {
-      return this.res.unauthorizedError();
+      const response = this.res.unauthorizedError();
+      res.status(response.statusCode).send(response.body);
     }
   }
 }

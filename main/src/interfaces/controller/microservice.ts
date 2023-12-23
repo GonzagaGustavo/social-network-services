@@ -1,8 +1,48 @@
+import path from "path";
 import { HttpRequest, ResponseObject } from ".";
 import InvalidMethodError from "../errors/invalid-method";
 import UnauthorizedError from "../errors/unauthorized-error";
+import { loadSync } from "@grpc/proto-loader";
+import { loadPackageDefinition, credentials } from "@grpc/grpc-js";
+import { Response } from "express";
 
-export default abstract class MicroServiceController {
+type CallBackFunction<T> = (error: any, data: T) => void;
+
+export default abstract class MicroServiceController<T> {
+  client: {
+    get: (info: any, callback: CallBackFunction<T>) => void;
+    create: (info: T, callback: CallBackFunction<T>) => void;
+    update: (info: T, callback: CallBackFunction<T>) => void;
+    delete: (info: string, callback: CallBackFunction<T>) => void;
+  };
+
+  constructor(serviceName: string, fileAndDirectoryName: string) {
+    this.setClient(serviceName, fileAndDirectoryName);
+  }
+
+  private getSrcDirectory() {
+    let srcDirectory: string;
+
+    if (__dirname.includes("dist")) {
+      srcDirectory = path.join(__dirname, "../../../src");
+    } else {
+      srcDirectory = path.join(__dirname, "../..");
+    }
+
+    return srcDirectory;
+  }
+
+  private async setClient(serviceName: string, fileAndDirectoryName: string) {
+    const protoFile = `${this.getSrcDirectory()}/domain/controllers/${fileAndDirectoryName}/${fileAndDirectoryName}.proto`;
+
+    const protoObject = loadSync(protoFile);
+    const client: any = loadPackageDefinition(protoObject);
+    this.client = new client[serviceName](
+      "localhost:50050",
+      credentials.createInsecure()
+    );
+  }
+
   res = {
     /**
      * @returns statusCode 400
@@ -76,8 +116,20 @@ export default abstract class MicroServiceController {
     },
   };
 
-  abstract GET(httpRequest: HttpRequest): Promise<ResponseObject>;
-  abstract POST(httpRequest: HttpRequest): Promise<ResponseObject>;
-  abstract PUT(httpRequest: HttpRequest): Promise<ResponseObject>;
-  abstract DELETE(httpRequest: HttpRequest): Promise<ResponseObject>;
+  abstract GET(
+    httpRequest: HttpRequest,
+    res: Response<any, Record<string, any>>
+  ): Promise<void>;
+  abstract POST(
+    httpRequest: HttpRequest,
+    res: Response<any, Record<string, any>>
+  ): Promise<void>;
+  abstract PUT(
+    httpRequest: HttpRequest,
+    res: Response<any, Record<string, any>>
+  ): Promise<void>;
+  abstract DELETE(
+    httpRequest: HttpRequest,
+    res: Response<any, Record<string, any>>
+  ): Promise<void>;
 }

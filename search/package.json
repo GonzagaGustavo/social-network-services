@@ -5,6 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --watch --transpile-only src/index.ts",
+    "start": "tsc && pnpm copy-files && node dist/index.js",
+    "clean": "rm -rf ./dist",
+    "copy-files": "cp -R ./src/proto/ ./dist/proto",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

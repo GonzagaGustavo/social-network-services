@@ -1,3 +1,4 @@
+import { Response } from "express";
 import Controller, {
   HttpRequest,
   ResponseObject,
@@ -18,31 +19,41 @@ export default class AuthenticationController extends Controller<JwtUseCase> {
     this.useCase = new JwtUseCase(jwtRepository, userRepository);
   }
 
-  async GET(httpRequest: HttpRequest): Promise<ResponseObject> {
-    if (!httpRequest.user) return this.res.unauthorizedError();
+  async GET(httpRequest: HttpRequest, res: Response): Promise<void> {
+    if (!httpRequest.user) {
+      const response = this.res.unauthorizedError();
+      res.status(response.statusCode).send(response.body);
+    }
 
-    return this.res.ok(httpRequest.user);
+    const response = this.res.ok(httpRequest.user);
+    res.status(response.statusCode).send(response.body);
   }
 
-  async POST(httpRequest: HttpRequest): Promise<ResponseObject> {
+  async POST(httpRequest: HttpRequest, res: Response): Promise<void> {
     try {
       const useCase = new LoginUseCase(
         this.useCase.userRepository,
         this.useCase
       );
-      const res = await useCase.execute(httpRequest.body);
-      return this.res.ok(res);
+      const results = await useCase.execute(httpRequest.body);
+      const response = this.res.ok(results);
+      res.status(response.statusCode).send(response.body);
     } catch (err) {
       console.error(err);
-      return this.res.badRequest(err);
+      const response = this.res.badRequest(err);
+      res.status(response.statusCode).send(response.body);
     }
   }
 
-  async PUT(httpRequest: HttpRequest): Promise<ResponseObject> {
-    return this.res.invalidMethod("PUT");
+  async PUT(httpRequest: HttpRequest, res: Response): Promise<void> {
+    const response = this.res.invalidMethod("PUT");
+    res.status(response.statusCode).send(response.body);
   }
 
-  async DELETE(httpRequest: HttpRequest): Promise<ResponseObject> {
-    if (!httpRequest.user) return this.res.unauthorizedError();
+  async DELETE(httpRequest: HttpRequest, res: Response): Promise<void> {
+    if (!httpRequest.user) {
+      const response = this.res.unauthorizedError();
+      res.status(response.statusCode).send(response.body);
+    }
   }
 }

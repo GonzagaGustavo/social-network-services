@@ -3,7 +3,7 @@ import RegisterRoute from "./register-route";
 import CountryController from "../../domain/controllers/country/Country";
 import UserController from "../../domain/controllers/user/User";
 import AuthenticationController from "../../domain/controllers/authentication/Authentication";
-import SearchHistoryController from "../../domain/controllers/history/search/HistorySearch";
+import SearchHistoryController from "../../domain/controllers/historySearch/HistorySearch";
 
 export default (router: Router) => {
   const registerRoute = new RegisterRoute(router);

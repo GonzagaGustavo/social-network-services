@@ -1,8 +1,6 @@
-import Controller, {
-  HttpRequest,
-  ResponseObject,
-} from "../../../interfaces/controller";
-import { Filter, initialFilter } from "../../../interfaces/repository";
+import { Response } from "express";
+import Controller, { HttpRequest } from "../../../interfaces/controller";
+import { Filter } from "../../../interfaces/repository";
 import CountryRepository from "../../repositories/Country/country.repository";
 import {
   CreateCountryInput,
@@ -19,7 +17,7 @@ export default class CountryController extends Controller<CountryUseCase> {
     this.useCase = new CountryUseCase(countryRepository);
   }
 
-  async GET(httpRequest: HttpRequest): Promise<ResponseObject> {
+  async GET(httpRequest: HttpRequest, res: Response): Promise<void> {
     try {
       const input: Filter = {
         page: httpRequest.query.page ? +httpRequest.query.page : 1,
@@ -31,15 +29,17 @@ export default class CountryController extends Controller<CountryUseCase> {
       };
 
       const countrys = await this.useCase.read(input);
-      return this.res.ok(
+      const response = this.res.ok(
         countrys.map((country) => this.res.removeUnderline(country))
       );
+      res.status(response.statusCode).send(response.body);
     } catch (err) {
-      return this.res.badRequest(err);
+      const response = this.res.badRequest(err);
+      res.status(response.statusCode).send(response.body);
     }
   }
 
-  async POST(httpRequest: HttpRequest): Promise<ResponseObject> {
+  async POST(httpRequest: HttpRequest, res: Response): Promise<void> {
     try {
       const input: CreateCountryInput = {
         name: httpRequest.body.name,
@@ -48,14 +48,16 @@ export default class CountryController extends Controller<CountryUseCase> {
 
       const country = await this.useCase.create(input);
 
-      return this.res.ok(country);
+      const response = this.res.ok(country);
+      res.status(response.statusCode).send(response.body);
     } catch (err) {
       console.error(err);
-      return this.res.badRequest(err);
+      const response = this.res.badRequest(err);
+      res.status(response.statusCode).send(response.body);
     }
   }
 
-  async PUT(httpRequest: HttpRequest): Promise<ResponseObject> {
+  async PUT(httpRequest: HttpRequest, res: Response): Promise<void> {
     try {
       const input: UpdateCountryInput = {
         id: httpRequest.body.id,
@@ -66,19 +68,23 @@ export default class CountryController extends Controller<CountryUseCase> {
 
       const output = await this.useCase.update(input);
 
-      return this.res.ok(output);
+      const response = this.res.ok(output);
+      res.status(response.statusCode).send(response.body);
     } catch (err) {
-      return this.res.badRequest(err);
+      const response = this.res.badRequest(err);
+      res.status(response.statusCode).send(response.body);
     }
   }
 
-  async DELETE(httpRequest: HttpRequest): Promise<ResponseObject> {
+  async DELETE(httpRequest: HttpRequest, res: Response): Promise<void> {
     try {
       const deleted = await this.useCase.remove(+httpRequest.params.id);
 
-      return this.res.ok(deleted);
+      const response = this.res.ok(deleted);
+      res.status(response.statusCode).send(response.body);
     } catch (err) {
-      return this.res.badRequest(err);
+      const response = this.res.badRequest(err);
+      res.status(response.statusCode).send(response.body);
     }
   }
 }

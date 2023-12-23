@@ -7,13 +7,11 @@ import dotenv from "dotenv";
 async function run() {
   dotenv.config();
 
-  server.bindAsync(
-    `0.0.0.0:${port}`,
-    ServerCredentials.createInsecure(),
-    () => {
-      server.start();
-    }
-  );
+  const credentials = ServerCredentials.createInsecure();
+
+  server.bindAsync(`0.0.0.0:${port}`, credentials, () => {
+    server.start();
+  });
   logger
     .child({ application: "application" })
     .info({ tag: "run" }, `Application booted on port ${port}`);

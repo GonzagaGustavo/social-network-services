@@ -1,7 +1,5 @@
 import path from "path";
-import logger from "./logger";
 import { get } from "./consumers";
-import { secret_token } from "./config";
 import { loadSync } from "@grpc/proto-loader";
 import { Server, loadPackageDefinition } from "@grpc/grpc-js";
 
