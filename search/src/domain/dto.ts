@@ -1,4 +1,4 @@
-import { Filter } from "src/abstract/repository";
+import { Filter } from "@/abstract/repository";
 
 export interface CreateSearchInput {
   user_id: number;

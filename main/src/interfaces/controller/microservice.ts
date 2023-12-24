@@ -3,7 +3,11 @@ import { HttpRequest, ResponseObject } from ".";
 import InvalidMethodError from "../errors/invalid-method";
 import UnauthorizedError from "../errors/unauthorized-error";
 import { loadSync } from "@grpc/proto-loader";
-import { loadPackageDefinition, credentials } from "@grpc/grpc-js";
+import {
+  loadPackageDefinition,
+  credentials,
+  ServiceClientConstructor,
+} from "@grpc/grpc-js";
 import { Response } from "express";
 
 type CallBackFunction<T> = (error: any, data: T) => void;
@@ -35,12 +39,18 @@ export default abstract class MicroServiceController<T> {
   private async setClient(serviceName: string, fileAndDirectoryName: string) {
     const protoFile = `${this.getSrcDirectory()}/domain/controllers/${fileAndDirectoryName}/${fileAndDirectoryName}.proto`;
 
-    const protoObject = loadSync(protoFile);
-    const client: any = loadPackageDefinition(protoObject);
-    this.client = new client[serviceName](
-      "localhost:50050",
-      credentials.createInsecure()
-    );
+    const options = {
+      keepCase: true,
+      longs: String,
+      enums: String,
+      defaults: true,
+      oneofs: true,
+    };
+
+    const protoObject = loadSync(protoFile, options);
+    const client = loadPackageDefinition(protoObject);
+    const Service: any = client[serviceName];
+    this.client = new Service("localhost:50050", credentials.createInsecure());
   }
 
   res = {

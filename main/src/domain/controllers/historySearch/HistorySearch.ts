@@ -8,14 +8,13 @@ export default class SearchHistoryController extends MicroServiceController<{}> 
   }
 
   async GET(httpRequest: HttpRequest, res: Response): Promise<void> {
-    const userId = httpRequest.query.userId;
+    const user_id = httpRequest.query.userId;
 
-    this.client.get({}, (e, newData) => {
+    this.client.get({ user_id }, (e, newData) => {
       if (e) {
-        const response = this.res.serverError(e);
+        const response = this.res.badRequest(e);
         res.status(response.statusCode).send(response.body);
       } else {
-        console.log(newData);
         const response = this.res.ok(newData);
         res.status(response.statusCode).send(response.body);
       }
@@ -28,7 +27,7 @@ export default class SearchHistoryController extends MicroServiceController<{}> 
   }
 
   async PUT(httpRequest: HttpRequest, res: Response): Promise<void> {
-    const response = this.res.ok("teste");
+    const response = this.res.invalidMethod("PUT");
     res.status(response.statusCode).send(response.body);
   }
 

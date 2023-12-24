@@ -1,5 +1,5 @@
+import logger from "@/logger";
 import { Filter, ServerConfig } from ".";
-import { serializeSql } from "../../framework/database";
 
 type SelectInput = {
   table: string;
@@ -41,7 +41,7 @@ export default class SqlBuilder<Entity> {
   }
 
   paginate(config: ServerConfig<Entity>, filter: Filter) {
-    console.log({ filter });
+    logger.info({ filter });
     const LIMIT = filter.limit;
     const OFFSET = LIMIT * (filter.page - 1);
     const CONFIG_WHERE = config.where ? config.where : "true";

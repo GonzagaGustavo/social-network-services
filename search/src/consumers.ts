@@ -30,11 +30,11 @@ export default class Consumer extends ConsumerTools<UseCase> {
 
     const filter: Filter = {
       ...initialFilter,
-      where: `s.user_id=${data.user_id}`,
+      where: `AND s.user_id=${data.user_id}`,
     };
     const searchHistory = await this.useCase.read(filter);
-
-    callback(null, searchHistory);
+    logger.info(searchHistory);
+    callback(null, { search: searchHistory });
   }
 
   create(call: any, callback: any): void {}

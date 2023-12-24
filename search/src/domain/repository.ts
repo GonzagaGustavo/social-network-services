@@ -1,5 +1,5 @@
-import Repository, { ServerConfig } from "src/abstract/repository";
-import orm from "src/config/db";
+import Repository, { ServerConfig } from "@/abstract/repository";
+import orm from "@/config/db";
 import zod from "zod";
 
 export const schema = zod.object({
@@ -81,7 +81,7 @@ export default class SearchRepository extends Repository<
         's.sort       AS s_sort',
         's.user_id    AS s_user_id'
       ],
-      searchColumns: [],
+      searchColumns: ["s.search"],
       joins: [],
       where: "",
       order: "sort",

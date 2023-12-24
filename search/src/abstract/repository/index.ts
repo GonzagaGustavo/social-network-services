@@ -1,5 +1,6 @@
-import orm, { serializeSql } from "src/config/db";
+import orm, { serializeSql } from "@/config/db";
 import SqlBuilder from "./sqlBuilder";
+import logger from "@/logger";
 
 export type Filter = {
   page: number;
@@ -29,7 +30,7 @@ export type ServerConfig<T> = {
   joins: string[]; // ok
   where: string;
   order: any; // ok
-  orderOptions: {};
+  orderOptions: any;
   extra: {
     columns: string[];
     joins: string[];
@@ -51,11 +52,11 @@ export default abstract class Repository<Entity, MinEntity> {
   }
 
   public async paginate(filter: Filter): Promise<Entity[]> {
-    console.log("AbstractService paginate()", filter);
+    logger.info("AbstractService paginate()", filter);
     const config = this.getConfig();
 
     const sql = this.sqlBuilder.paginate(config, filter);
-    console.log(sql);
+    logger.info(sql);
 
     const rows = await orm.$queryRawUnsafe<any>(sql);
     const objects = this._rowsToObjects(rows);
@@ -63,18 +64,18 @@ export default abstract class Repository<Entity, MinEntity> {
   }
 
   public async getById(id: number | string): Promise<Entity> {
-    console.log("AbstractRepository getById()", id);
+    logger.info("AbstractRepository getById()", id);
     const config = this.getConfig();
 
     const sql = this.sqlBuilder.getById(config, id);
-    console.log(sql);
+    logger.info(sql);
 
     const rows = await orm.$queryRaw<any>(serializeSql(sql), []);
     return this._rowsToObjects(rows)[0];
   }
 
   public async sort(ids: number[]) {
-    console.log("AbstractRepository sort()", ids);
+    logger.info("AbstractRepository sort()", ids);
     const config = this.getConfig();
     const { table } = config;
     let sort = ids.length;

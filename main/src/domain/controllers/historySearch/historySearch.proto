@@ -1,10 +1,18 @@
 syntax = "proto3";
 
 service Search {
-    rpc get (Empty) returns (SearchGet) {}
+    rpc get (SearchGetRequest) returns (SearchGetResponse) {}
 }
 
 message Empty {}
+
+message SearchGetRequest {
+    string user_id = 1;
+}
+
+message SearchGetResponse {
+    repeated SearchGet search = 1;
+}
 
 message SearchGet {
     int32 sort = 1;
