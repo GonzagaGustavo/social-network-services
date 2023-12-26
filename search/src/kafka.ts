@@ -1,5 +1,6 @@
 import { KafkaConsumer } from "node-rdkafka";
 import logger from "./logger";
+import eventType from "./config/eventType";
 
 const kafkaConsumer = new KafkaConsumer(
   {
@@ -15,7 +16,8 @@ kafkaConsumer
     kafkaConsumer.consume();
   })
   .on("data", (data) => {
-    logger.info(data);
+    const playload = eventType.fromBuffer(data.value as any);
+    logger.info(playload);
   });
 
 export default kafkaConsumer;

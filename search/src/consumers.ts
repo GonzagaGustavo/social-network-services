@@ -36,7 +36,9 @@ class Consumer extends ConsumerTools<UseCase> {
     callback(null, { search: searchHistory });
   }
 
-  create(call: any, callback: any): void {}
+  async create(data: { user_id: number; search: string }): Promise<void> {
+    const created = await this.useCase.create(data);
+  }
   delete(call: any, callback: any): void {}
   update(call: any, callback: any): void {}
 }
