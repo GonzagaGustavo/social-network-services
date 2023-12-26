@@ -36,10 +36,28 @@ class Consumer extends ConsumerTools<UseCase> {
     callback(null, { search: searchHistory });
   }
 
-  async create(data: { user_id: number; search: string }): Promise<void> {
-    const created = await this.useCase.create(data);
+  async create(data: { user_id?: number; search: string }): Promise<void> {
+    if (!data.user_id) return;
+
+    const filter: Filter = {
+      ...initialFilter,
+      where: `AND s.user_id=${data.user_id} AND s.search='${data.search}'`,
+    };
+
+    const exist = await this.useCase.read(filter);
+
+    if (exist.length === 0) {
+      const created = await this.useCase.create({
+        search: data.search,
+        user_id: data.user_id,
+      });
+    }
   }
-  delete(call: any, callback: any): void {}
+  async delete(data: { user_id?: number; id?: string }): Promise<void> {
+    if (data.id && data.user_id) {
+      await this.useCase.remove(data.id, data.user_id);
+    }
+  }
   update(call: any, callback: any): void {}
 }
 

@@ -1,5 +1,5 @@
 export interface GenerateJwtInput {
-  playload: { id: number; email: string };
+  playload: { id: number; email: string; name: string };
 }
 
 export interface RefreshToken {

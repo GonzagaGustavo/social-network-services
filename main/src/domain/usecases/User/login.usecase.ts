@@ -31,7 +31,7 @@ export default class LoginUseCase {
 
     if (compareSync(input.password, user[0].password)) {
       return await this.jwtUseCase.generate({
-        playload: { id: user[0].id, email: user[0].email },
+        playload: { id: user[0].id, email: user[0].email, name: user[0].name },
       });
     } else {
       throw new InvalidParamError("password");

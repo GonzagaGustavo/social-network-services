@@ -49,6 +49,7 @@ export default class JwtUseCase {
       playload: {
         id: refresh_token.userId,
         email: user.email,
+        name: user.name,
       },
     });
 
