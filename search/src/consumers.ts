@@ -1,4 +1,3 @@
-import { ServerUnaryCall } from "@grpc/grpc-js";
 import logger from "./logger";
 import ConsumerTools from "./abstract/consumer";
 import UseCase from "./domain/usecase";
@@ -12,7 +11,7 @@ interface MyResponse {
   search: string;
 }
 
-export default class Consumer extends ConsumerTools<UseCase> {
+class Consumer extends ConsumerTools<UseCase> {
   useCase: UseCase;
 
   constructor() {
@@ -41,3 +40,6 @@ export default class Consumer extends ConsumerTools<UseCase> {
   delete(call: any, callback: any): void {}
   update(call: any, callback: any): void {}
 }
+
+const consumer = new Consumer();
+export default consumer;

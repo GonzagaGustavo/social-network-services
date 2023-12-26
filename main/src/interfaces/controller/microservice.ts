@@ -3,12 +3,9 @@ import { HttpRequest, ResponseObject } from ".";
 import InvalidMethodError from "../errors/invalid-method";
 import UnauthorizedError from "../errors/unauthorized-error";
 import { loadSync } from "@grpc/proto-loader";
-import {
-  loadPackageDefinition,
-  credentials,
-  ServiceClientConstructor,
-} from "@grpc/grpc-js";
+import { loadPackageDefinition, credentials } from "@grpc/grpc-js";
 import { Response } from "express";
+import { Producer, ProducerStream } from "node-rdkafka";
 
 type CallBackFunction<T> = (error: any, data: T) => void;
 
@@ -19,9 +16,11 @@ export default abstract class MicroServiceController<T> {
     update: (info: T, callback: CallBackFunction<T>) => void;
     delete: (info: string, callback: CallBackFunction<T>) => void;
   };
+  kafkaProducer: ProducerStream;
 
   constructor(serviceName: string, fileAndDirectoryName: string) {
     this.setClient(serviceName, fileAndDirectoryName);
+    this.setProducer({ topic: serviceName });
   }
 
   private getSrcDirectory() {
@@ -51,6 +50,16 @@ export default abstract class MicroServiceController<T> {
     const client = loadPackageDefinition(protoObject);
     const Service: any = client[serviceName];
     this.client = new Service("localhost:50050", credentials.createInsecure());
+  }
+
+  private setProducer({ topic }: { topic: string }) {
+    this.kafkaProducer = Producer.createWriteStream(
+      {
+        "metadata.broker.list": "localhost:9092",
+      },
+      {},
+      { topic }
+    );
   }
 
   res = {

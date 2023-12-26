@@ -2,7 +2,10 @@ import { Response, response } from "express";
 import { HttpRequest, ResponseObject } from "../../../interfaces/controller";
 import MicroServiceController from "../../../interfaces/controller/microservice";
 
-export default class SearchHistoryController extends MicroServiceController<{}> {
+export default class SearchHistoryController extends MicroServiceController<{
+  search: string;
+  sort: number;
+}> {
   constructor() {
     super("Search", "historySearch");
   }
