@@ -17,6 +17,7 @@ export default class UseCase {
   async read(input: ReadSearchInput) {
     const history = await this.repository.paginate(input);
     const schema = zod.object({
+      id: zod.string(),
       search: zod.string(),
       sort: zod.number(),
     });

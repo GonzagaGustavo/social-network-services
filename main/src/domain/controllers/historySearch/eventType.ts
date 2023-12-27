@@ -10,7 +10,7 @@ export default avro.Type.forSchema({
     },
     { name: "id", type: ["null", "string"], default: null },
     { name: "user_id", type: ["null", "int"], default: null },
-    { name: "search", type: "string" },
+    { name: "search", type: ["null", "string"], default: null },
     { name: "sort", type: ["null", "int"], default: null },
   ],
 });

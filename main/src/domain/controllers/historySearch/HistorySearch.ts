@@ -8,7 +8,7 @@ type HandleMessage = {
   event: "CREATE" | "DELETE" | "UPDATE";
   id?: string;
   user_id?: number;
-  search: string;
+  search?: string;
   sort?: number;
 };
 
@@ -77,7 +77,34 @@ export default class SearchHistoryController extends MicroServiceController<{
   }
 
   async DELETE(httpRequest: HttpRequest, res: Response): Promise<void> {
-    const response = this.res.ok("teste");
-    res.status(response.statusCode).send(response.body);
+    if (!httpRequest.user || !httpRequest.user.id) {
+      const response = this.res.unauthorizedError();
+      res.status(response.statusCode).send(response.body);
+      return;
+    }
+
+    if (!httpRequest.params.id) {
+      const response = this.res.badRequest(new InvalidParamError("Id"));
+      res.status(response.statusCode).send(response.body);
+      return;
+    }
+
+    const playload: HandleMessage = {
+      event: "DELETE",
+      id: httpRequest.params.id,
+      user_id: httpRequest.user.id,
+    };
+    const success = this.kafkaProducer.write(eventType.toBuffer(playload));
+
+    if (success) {
+      const response = this.res.ok({ success });
+      res.status(response.statusCode).send(response.body);
+      return;
+    } else {
+      const response = this.res.badRequest(
+        new Error("Something went wrong...")
+      );
+      res.status(response.statusCode).send(response.body);
+    }
   }
 }
