@@ -21,17 +21,22 @@ export default class SearchHistoryController extends MicroServiceController<{
   }
 
   async GET(httpRequest: HttpRequest, res: Response): Promise<void> {
-    const user_id = httpRequest.query.userId;
+    const user_id = httpRequest.user.id;
 
-    this.client.get({ user_id }, (e, newData) => {
-      if (e) {
-        const response = this.res.badRequest(e);
-        res.status(response.statusCode).send(response.body);
-      } else {
-        const response = this.res.ok(newData);
-        res.status(response.statusCode).send(response.body);
-      }
-    });
+    if (user_id) {
+      this.client.get({ user_id }, (e, newData) => {
+        if (e) {
+          const response = this.res.badRequest(e);
+          res.status(response.statusCode).send(response.body);
+        } else {
+          const response = this.res.ok(newData);
+          res.status(response.statusCode).send(response.body);
+        }
+      });
+    } else {
+      const response = this.res.unauthorizedError();
+      res.status(response.statusCode).send(response.body);
+    }
   }
 
   async POST(httpRequest: HttpRequest, res: Response): Promise<void> {
