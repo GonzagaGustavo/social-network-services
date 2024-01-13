@@ -38,6 +38,7 @@ model User {
   refresh_token RefreshToken?
   post          Post[]
   likes         Likes[]
+  favorites     Favorites[]
 
   @@map("user")
 }
@@ -52,7 +53,7 @@ model RefreshToken {
 }
 
 model Post {
-  id          Int      @id @default(autoincrement()) @db.Integer
+  id          String      @id @default(uuid())
   autor       User     @relation(fields: [autor_id], references: [id])
   autor_id    Int
   type        String   @db.VarChar(50)
@@ -60,18 +61,18 @@ model Post {
   title       String   @db.VarChar(200)
   description String   @db.Text()
   created     DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamptz()
-  favorites   Int      @default(0) @db.Integer
+  favorites   Favorites[]
   deslikes    Int      @default(0) @db.Integer
   shares      Int      @default(0) @db.Integer
   video       Video?   @relation(fields: [video_id], references: [id])
-  video_id    Int?     @unique @default(dbgenerated("NULL")) @db.Integer
+  video_id    String?     @unique @default(dbgenerated("NULL"))
   likes       Likes[]
 
   @@map("post")
 }
 
 model Video {
-  id     Int     @id @default(autoincrement()) @db.Integer
+  id     String     @id @default(uuid())
   thumb  String  @db.VarChar(150)
   v1080p String? @default(dbgenerated("NULL")) @db.VarChar(150)
   v720p  String? @default(dbgenerated("NULL")) @db.VarChar(150)
@@ -88,8 +89,18 @@ model Likes {
   post    Post     @relation(fields: [post_id], references: [id])
   user    User     @relation(fields: [user_id], references: [id])
   user_id Int
-  post_id Int
+  post_id String
   created DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamptz()
 
   @@map("likes")
+}
+model Favorites {
+  id String @id @default(uuid())
+  post Post @relation(fields: [post_id], references: [id])
+  user User @relation(fields: [user_id], references: [id])
+  user_id Int
+  post_id String
+  created DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamptz()
+
+  @@map("favorite")
 }

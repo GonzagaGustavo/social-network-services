@@ -18,8 +18,16 @@ export default abstract class MicroServiceController<T> {
   };
   kafkaProducer: ProducerStream;
 
-  constructor(serviceName: string, fileAndDirectoryName: string) {
-    this.setClient(serviceName, fileAndDirectoryName);
+  /**
+   *
+   * @param serviceName
+   * @param param File, directory of .proto and port of gRPC server
+   */
+  constructor(
+    serviceName: string,
+    { file, directory, port }: { file: string; directory: string; port: string }
+  ) {
+    this.setClient(serviceName, { directory, file, port });
     this.setProducer({ topic: serviceName });
   }
 
@@ -35,8 +43,11 @@ export default abstract class MicroServiceController<T> {
     return srcDirectory;
   }
 
-  private async setClient(serviceName: string, fileAndDirectoryName: string) {
-    const protoFile = `${this.getSrcDirectory()}/domain/controllers/${fileAndDirectoryName}/${fileAndDirectoryName}.proto`;
+  private async setClient(
+    serviceName: string,
+    { file, directory, port }: { file: string; directory: string; port: string }
+  ) {
+    const protoFile = `${this.getSrcDirectory()}/domain/controllers/${directory}/${file}.proto`;
 
     const options = {
       keepCase: true,
@@ -49,7 +60,10 @@ export default abstract class MicroServiceController<T> {
     const protoObject = loadSync(protoFile, options);
     const client = loadPackageDefinition(protoObject);
     const Service: any = client[serviceName];
-    this.client = new Service("localhost:50050", credentials.createInsecure());
+    this.client = new Service(
+      `localhost:${port}`,
+      credentials.createInsecure()
+    );
   }
 
   private setProducer({ topic }: { topic: string }) {
