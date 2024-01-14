@@ -735,6 +735,7 @@ dependencies = [
  "dotenvy",
  "prost",
  "rdkafka",
+ "serde_json",
  "tokio",
  "tonic",
  "tonic-build",

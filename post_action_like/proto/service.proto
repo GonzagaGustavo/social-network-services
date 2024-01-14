@@ -1,0 +1,25 @@
+syntax = "proto3";
+package like;
+
+service Like {
+    rpc get (LikeGetRequest) returns (LikeGetResponse) {}
+}
+
+message LikeGetRequest {
+    string user_id = 1;
+}
+
+message LikeGetResponse {
+    repeated LikeGet likes = 1;
+}
+
+message LikeGet {
+    string id = 1;
+    string title = 2;
+    Video video = 3;
+    
+}
+message Video {
+    string id = 1;
+    string thumb = 2;
+}

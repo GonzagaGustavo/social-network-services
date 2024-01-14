@@ -1,17 +1,25 @@
 use diesel::prelude::*;
 
+table! {
+    likes {
+        id -> Text,
+        user_id -> Integer,
+        post_id -> Text,
+        created -> Timestamptz,
+    }
+}
 
 #[derive(Insertable)]
 #[table_name = "likes"]
-pub struct NewLikes<'a> {
+pub struct NewLikes {
     pub user_id: i32,
-    pub post_id: &'a str,
+    pub post_id: String,
 }
 
-#[derive(Debug, Queryable, AsChangeset)]
+#[derive(Debug, Queryable)]
 pub struct Likes {
     pub id: String,
     pub user_id: i32,
     pub post_id: String,
-    pub created: chrono::NaiveDateTime
+    pub created: chrono::NaiveDateTime,
 }

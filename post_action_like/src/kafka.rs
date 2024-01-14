@@ -2,7 +2,7 @@ use std::thread;
 
 use rdkafka::{
     consumer::{BaseConsumer, Consumer},
-    ClientConfig,
+    ClientConfig, Message,
 };
 
 pub fn setup_consumer() {
@@ -19,8 +19,10 @@ pub fn setup_consumer() {
     thread::spawn(move || loop {
         for msg_result in consumer.iter() {
             let msg = msg_result.unwrap();
+            let value = msg.payload().unwrap();
+            let value_json: String = serde_json::from_slice(value).expect("failed do deser JSON");
 
-            println!("{}", msg)
+            println!("{:?}", value_json)
         }
-    })
+    });
 }
