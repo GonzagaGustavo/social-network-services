@@ -12,17 +12,29 @@ type Like = {
 
 export default class PostActionLike extends MicroServiceController<Like> {
   constructor() {
-    super("Like", {
-      directory: "post/actionLike",
-      file: "actionLike.proto",
-      port: "50051",
-    });
+    super(
+      { _package: "like", service: "Like" },
+      {
+        directory: "post/actionLike",
+        file: "actionLike",
+        port: "50051",
+      }
+    );
   }
 
   async GET(
     httpRequest: HttpRequest,
     res: Response<any, Record<string, any>>
-  ): Promise<void> {}
+  ): Promise<void> {
+    this.client.get({ user_id: "1" }, (err, data) => {
+      if (err) {
+        console.error(err);
+        return res.send({ err });
+      }
+
+      res.send({ data });
+    });
+  }
 
   async POST(
     httpRequest: HttpRequest,

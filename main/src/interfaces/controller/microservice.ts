@@ -24,11 +24,11 @@ export default abstract class MicroServiceController<T> {
    * @param param File, directory of .proto and port of gRPC server
    */
   constructor(
-    serviceName: string,
+    { service, _package }: { _package?: string; service: string },
     { file, directory, port }: { file: string; directory: string; port: string }
   ) {
-    this.setClient(serviceName, { directory, file, port });
-    this.setProducer({ topic: serviceName });
+    this.setClient({ service, _package }, { directory, file, port });
+    this.setProducer({ topic: service });
   }
 
   private getSrcDirectory() {
@@ -44,7 +44,7 @@ export default abstract class MicroServiceController<T> {
   }
 
   private async setClient(
-    serviceName: string,
+    { service, _package }: { _package?: string; service: string },
     { file, directory, port }: { file: string; directory: string; port: string }
   ) {
     const protoFile = `${this.getSrcDirectory()}/domain/controllers/${directory}/${file}.proto`;
@@ -59,7 +59,13 @@ export default abstract class MicroServiceController<T> {
 
     const protoObject = loadSync(protoFile, options);
     const client = loadPackageDefinition(protoObject);
-    const Service: any = client[serviceName];
+    let Service: any;
+    if (_package) {
+      Service = client[_package][service];
+    } else {
+      Service = client[service];
+    }
+
     this.client = new Service(
       `localhost:${port}`,
       credentials.createInsecure()

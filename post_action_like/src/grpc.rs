@@ -1,5 +1,5 @@
 use like::like_server::{Like, LikeServer};
-use like::{LikeGetRequest, LikeGetResponse};
+use like::{LikeGet, LikeGetRequest, LikeGetResponse, Video};
 use tonic::Status;
 use tonic::{transport::Server, Request, Response};
 
@@ -16,8 +16,35 @@ impl Like for LikeService {
         &self,
         request: Request<LikeGetRequest>,
     ) -> Result<Response<LikeGetResponse>, Status> {
-        Ok(Response::new(message))
+        let req = request.into_inner();
+
+        println!("user_id {}", req.user_id);
+
+        let like = LikeGet {
+            id: "a".to_string(),
+            title: "teste".to_string(),
+            video: Some(Video {
+                id: "b".to_string(),
+                thumb: "URL teste".to_string(),
+            }),
+        };
+        let response = LikeGetResponse { likes: vec![like] };
+
+        Ok(Response::new(response))
     }
 }
 
-fn setup_grpc() {}
+#[tokio::main]
+pub async fn setup_grpc() -> Result<(), Box<dyn std::error::Error>> {
+    let addr = "[::1]:50051".parse()?;
+    let like_service = LikeService::default();
+
+    println!("Server running on {}", addr);
+
+    Server::builder()
+        .add_service(LikeServer::new(like_service))
+        .serve(addr)
+        .await?;
+
+    Ok(())
+}

@@ -17,11 +17,14 @@ export default class SearchHistoryController extends MicroServiceController<{
   sort: number;
 }> {
   constructor() {
-    super("Search", {
-      directory: "historySearch",
-      file: "historySearch",
-      port: "50050",
-    });
+    super(
+      { service: "Search" },
+      {
+        directory: "historySearch",
+        file: "historySearch",
+        port: "50050",
+      }
+    );
   }
 
   async GET(httpRequest: HttpRequest, res: Response): Promise<void> {
