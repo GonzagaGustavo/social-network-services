@@ -80,6 +80,7 @@ export default abstract class MicroServiceController<T> {
       {},
       { topic }
     );
+    this.kafkaProducer.connect();
   }
 
   res = {

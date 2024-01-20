@@ -19,10 +19,11 @@ pub fn setup_consumer() {
         .expect("topic subscribe failed");
 
     loop {
-        match consumer.poll(Duration::from_millis(100)) {
+        match consumer.poll(Duration::from_millis(1000)) {
             Some(Ok(msg)) => {
                 // Processa a mensagem recebida
                 if let Some(payload) = msg.payload() {
+                    println!("{:?}", payload.to_vec());
                     match read(payload.to_vec()) {
                         Ok(serialized_msg) => {
                             // Imprime os registros se a leitura for bem-sucedida

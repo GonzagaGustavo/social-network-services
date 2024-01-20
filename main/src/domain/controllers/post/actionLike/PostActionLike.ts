@@ -43,9 +43,14 @@ export default class PostActionLike extends MicroServiceController<Like> {
   ): Promise<void> {
     const playload = {
       event: "CREATE",
+      id: "aleatorio",
       user_id: 1,
     };
-    const success = this.kafkaProducer.write(eventType.toBuffer(playload));
+    const avroBuffer = Buffer.concat([
+      Buffer.from([0x00, 0x01, 0x04, 0x1f]), // Marca de cabeçalho Avro
+      eventType.toBuffer(playload), // Dados serializados
+    ]);
+    const success = this.kafkaProducer.write(avroBuffer);
 
     if (success) {
       const response = this.res.ok({ success });

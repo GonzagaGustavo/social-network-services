@@ -1,6 +1,6 @@
-import avro from "avsc";
+import avro from "avro-js";
 
-export default avro.Type.forSchema({
+export default avro.parse({
   type: "record",
   name: "Handle",
   fields: [
