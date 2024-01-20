@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { HttpRequest } from "../../../../interfaces/controller";
 import MicroServiceController from "../../../../interfaces/controller/microservice";
+import eventType from "./eventType";
 
 type Like = {
   user?: { id: number; email: string; username: string };
@@ -39,7 +40,24 @@ export default class PostActionLike extends MicroServiceController<Like> {
   async POST(
     httpRequest: HttpRequest,
     res: Response<any, Record<string, any>>
-  ): Promise<void> {}
+  ): Promise<void> {
+    const playload = {
+      event: "CREATE",
+      user_id: 1,
+    };
+    const success = this.kafkaProducer.write(eventType.toBuffer(playload));
+
+    if (success) {
+      const response = this.res.ok({ success });
+      res.status(response.statusCode).send(response.body);
+      return;
+    } else {
+      const response = this.res.badRequest(
+        new Error("Something went wrong...")
+      );
+      res.status(response.statusCode).send(response.body);
+    }
+  }
 
   async PUT(
     httpRequest: HttpRequest,

@@ -1,14 +1,16 @@
-use std::thread;
+use std::time::Duration;
 
 use rdkafka::{
     consumer::{BaseConsumer, Consumer},
     ClientConfig, Message,
 };
 
+use crate::config::event_type::read;
+
 pub fn setup_consumer() {
     let consumer: BaseConsumer = ClientConfig::new()
-        .set("metadata.broker.list", "localhost:9092")
-        .set("group.id", "post_action_like")
+        .set("bootstrap.servers", "localhost:9092")
+        .set("group.id", "teste")
         .create()
         .expect("invalid consumer config");
 
@@ -16,13 +18,32 @@ pub fn setup_consumer() {
         .subscribe(&["Like"])
         .expect("topic subscribe failed");
 
-    thread::spawn(move || loop {
-        for msg_result in consumer.iter() {
-            let msg = msg_result.unwrap();
-            let value = msg.payload().unwrap();
-            let value_json: String = serde_json::from_slice(value).expect("failed do deser JSON");
-
-            println!("{:?}", value_json)
+    loop {
+        match consumer.poll(Duration::from_millis(100)) {
+            Some(Ok(msg)) => {
+                // Processa a mensagem recebida
+                if let Some(payload) = msg.payload() {
+                    match read(payload.to_vec()) {
+                        Ok(serialized_msg) => {
+                            // Imprime os registros se a leitura for bem-sucedida
+                            for record in serialized_msg {
+                                println!("Registro Avro: {:?}", record);
+                            }
+                        }
+                        Err(err) => {
+                            // Imprime uma mensagem de erro se houver um problema na leitura
+                            eprintln!("Erro ao ler dados Avro: {:?}", err);
+                        }
+                    }
+                }
+            }
+            Some(Err(err)) => {
+                // Trata erros de leitura
+                println!("Erro ao ler mensagem: {:?}", err);
+            }
+            None => {
+                // Não há mensagens disponíveis
+            }
         }
-    });
+    }
 }
