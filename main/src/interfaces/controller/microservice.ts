@@ -6,6 +6,7 @@ import { loadSync } from "@grpc/proto-loader";
 import { loadPackageDefinition, credentials } from "@grpc/grpc-js";
 import { Response } from "express";
 import { Producer, ProducerStream } from "node-rdkafka";
+import protobuf from "protobufjs";
 
 type CallBackFunction<T> = (error: any, data: T) => void;
 
@@ -17,6 +18,8 @@ export default abstract class MicroServiceController<T> {
     delete: (info: string, callback: CallBackFunction<T>) => void;
   };
   kafkaProducer: ProducerStream;
+  protoFile: string;
+  kafkaMessage: protobuf.Type;
 
   /**
    *
@@ -25,10 +28,16 @@ export default abstract class MicroServiceController<T> {
    */
   constructor(
     { service, _package }: { _package?: string; service: string },
-    { file, directory, port }: { file: string; directory: string; port: string }
+    {
+      file,
+      directory,
+      port,
+      kafkaMessage: kafkaMessageName,
+    }: { file: string; directory: string; port: string; kafkaMessage: string }
   ) {
-    this.setClient({ service, _package }, { directory, file, port });
-    this.setProducer({ topic: service });
+    this.setProtoFile({ directory, file });
+    this.setClient({ service, _package, port });
+    this.setProducer({ topic: service, kafkaMessageName });
   }
 
   private getSrcDirectory() {
@@ -43,12 +52,15 @@ export default abstract class MicroServiceController<T> {
     return srcDirectory;
   }
 
-  private async setClient(
-    { service, _package }: { _package?: string; service: string },
-    { file, directory, port }: { file: string; directory: string; port: string }
-  ) {
-    const protoFile = `${this.getSrcDirectory()}/domain/controllers/${directory}/${file}.proto`;
-
+  private async setClient({
+    service,
+    _package,
+    port,
+  }: {
+    _package?: string;
+    service: string;
+    port: string;
+  }) {
     const options = {
       keepCase: true,
       longs: String,
@@ -57,7 +69,7 @@ export default abstract class MicroServiceController<T> {
       oneofs: true,
     };
 
-    const protoObject = loadSync(protoFile, options);
+    const protoObject = loadSync(this.protoFile, options);
     const client = loadPackageDefinition(protoObject);
     let Service: any;
     if (_package) {
@@ -72,7 +84,13 @@ export default abstract class MicroServiceController<T> {
     );
   }
 
-  private setProducer({ topic }: { topic: string }) {
+  private setProducer({
+    topic,
+    kafkaMessageName,
+  }: {
+    topic: string;
+    kafkaMessageName: string;
+  }) {
     this.kafkaProducer = Producer.createWriteStream(
       {
         "metadata.broker.list": "localhost:9092",
@@ -81,6 +99,19 @@ export default abstract class MicroServiceController<T> {
       { topic }
     );
     this.kafkaProducer.connect();
+
+    const root = protobuf.loadSync(this.protoFile);
+    this.kafkaMessage = root.lookupType(kafkaMessageName);
+  }
+
+  private setProtoFile({
+    directory,
+    file,
+  }: {
+    file: string;
+    directory: string;
+  }) {
+    this.protoFile = `${this.getSrcDirectory()}/domain/controllers/${directory}/${file}.proto`;
   }
 
   res = {

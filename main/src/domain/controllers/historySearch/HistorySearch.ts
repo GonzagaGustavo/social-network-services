@@ -1,8 +1,7 @@
-import { Response, response } from "express";
-import { HttpRequest, ResponseObject } from "../../../interfaces/controller";
+import { Response } from "express";
+import { HttpRequest } from "../../../interfaces/controller";
 import MicroServiceController from "../../../interfaces/controller/microservice";
 import InvalidParamError from "../../../interfaces/errors/invalid-param";
-import eventType from "./eventType";
 
 type HandleMessage = {
   event: "CREATE" | "DELETE" | "UPDATE";
@@ -20,6 +19,7 @@ export default class SearchHistoryController extends MicroServiceController<{
     super(
       { service: "Search" },
       {
+        kafkaMessage: "Handle",
         directory: "historySearch",
         file: "historySearch",
         port: "50050",
@@ -64,7 +64,9 @@ export default class SearchHistoryController extends MicroServiceController<{
       search: httpRequest.body.search,
       user_id: httpRequest.user.id,
     };
-    const success = this.kafkaProducer.write(eventType.toBuffer(playload));
+    const protobufObject = this.kafkaMessage.create(playload);
+    const buffer = this.kafkaMessage.encode(protobufObject).finish();
+    const success = this.kafkaProducer.write(buffer);
 
     if (success) {
       const response = this.res.ok({ success });
@@ -101,7 +103,10 @@ export default class SearchHistoryController extends MicroServiceController<{
       id: httpRequest.params.id,
       user_id: httpRequest.user.id,
     };
-    const success = this.kafkaProducer.write(eventType.toBuffer(playload));
+    const protobufObject = this.kafkaMessage.create(playload);
+    const buffer = this.kafkaMessage.encode(protobufObject).finish();
+
+    const success = this.kafkaProducer.write(buffer);
 
     if (success) {
       const response = this.res.ok({ success });

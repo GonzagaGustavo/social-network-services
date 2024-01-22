@@ -38,6 +38,9 @@ dependencies:
   node-rdkafka:
     specifier: ^2.18.0
     version: 2.18.0
+  protobufjs:
+    specifier: ^7.2.6
+    version: 7.2.6
   sharp:
     specifier: ^0.32.5
     version: 0.32.5
@@ -539,7 +542,7 @@ packages:
     dependencies:
       lodash.camelcase: 4.3.0
       long: 5.2.3
-      protobufjs: 7.2.5
+      protobufjs: 7.2.6
       yargs: 17.7.2
     dev: false
 
@@ -3291,8 +3294,8 @@ packages:
       sisteransi: 1.0.5
     dev: true
 
-  /protobufjs@7.2.5:
-    resolution: {integrity: sha512-gGXRSXvxQ7UiPgfw8gevrfRWcTlSbOFg+p/N+JVJEK5VhueL2miT6qTymqAmjr1Q5WbOCyJbyrk6JfWKwlFn6A==}
+  /protobufjs@7.2.6:
+    resolution: {integrity: sha512-dgJaEDDL6x8ASUZ1YqWciTRrdOuYNzoOf27oHNfdyvKqHr5i0FV7FSLU+aIeFjyFgVxrpTOtQUi0BLLBymZaBw==}
     engines: {node: '>=12.0.0'}
     requiresBuild: true
     dependencies:

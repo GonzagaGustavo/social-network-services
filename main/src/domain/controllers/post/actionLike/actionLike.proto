@@ -22,3 +22,14 @@ message Video {
     string id = 1;
     string thumb = 2;
 }
+
+message Handle {
+  enum Event {
+    CREATE = 0;
+    DELETE = 1;
+  }
+
+  Event event = 1;
+  string id = 2;
+  int32 user_id = 3;
+}

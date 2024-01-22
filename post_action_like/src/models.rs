@@ -10,7 +10,7 @@ table! {
 }
 
 #[derive(Insertable)]
-#[table_name = "likes"]
+#[diesel(table_name = likes)]
 pub struct NewLikes {
     pub user_id: i32,
     pub post_id: String,

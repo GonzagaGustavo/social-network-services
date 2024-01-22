@@ -1,7 +1,6 @@
 import { Response } from "express";
 import { HttpRequest } from "../../../../interfaces/controller";
 import MicroServiceController from "../../../../interfaces/controller/microservice";
-import eventType from "./eventType";
 
 type Like = {
   user?: { id: number; email: string; username: string };
@@ -19,6 +18,7 @@ export default class PostActionLike extends MicroServiceController<Like> {
         directory: "post/actionLike",
         file: "actionLike",
         port: "50051",
+        kafkaMessage: "Handle",
       }
     );
   }
@@ -42,15 +42,14 @@ export default class PostActionLike extends MicroServiceController<Like> {
     res: Response<any, Record<string, any>>
   ): Promise<void> {
     const playload = {
-      event: "CREATE",
-      id: "aleatorio",
-      user_id: 1,
+      event: "DELETE",
+      id: "correto",
+      user_id: 12,
     };
-    const avroBuffer = Buffer.concat([
-      Buffer.from([0x00, 0x01, 0x04, 0x1f]), // Marca de cabeçalho Avro
-      eventType.toBuffer(playload), // Dados serializados
-    ]);
-    const success = this.kafkaProducer.write(avroBuffer);
+    const protobufObject = this.kafkaMessage.create(playload);
+    const buffer = this.kafkaMessage.encode(protobufObject).finish();
+
+    const success = this.kafkaProducer.write(buffer);
 
     if (success) {
       const response = this.res.ok({ success });

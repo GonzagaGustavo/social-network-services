@@ -1,11 +1,15 @@
+use like::Handle;
+use prost::Message;
 use std::time::Duration;
 
 use rdkafka::{
     consumer::{BaseConsumer, Consumer},
-    ClientConfig, Message,
+    ClientConfig, Message as OtherMessage,
 };
 
-use crate::config::event_type::read;
+pub mod like {
+    tonic::include_proto!("like");
+}
 
 pub fn setup_consumer() {
     let consumer: BaseConsumer = ClientConfig::new()
@@ -24,16 +28,13 @@ pub fn setup_consumer() {
                 // Processa a mensagem recebida
                 if let Some(payload) = msg.payload() {
                     println!("{:?}", payload.to_vec());
-                    match read(payload.to_vec()) {
-                        Ok(serialized_msg) => {
-                            // Imprime os registros se a leitura for bem-sucedida
-                            for record in serialized_msg {
-                                println!("Registro Avro: {:?}", record);
-                            }
+
+                    match Handle::decode(payload) {
+                        Ok(protobuf_obj) => {
+                            println!("{:?}", protobuf_obj);
                         }
                         Err(err) => {
-                            // Imprime uma mensagem de erro se houver um problema na leitura
-                            eprintln!("Erro ao ler dados Avro: {:?}", err);
+                            eprintln!("Erro: {}", err)
                         }
                     }
                 }
