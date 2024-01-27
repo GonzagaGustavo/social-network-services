@@ -25,11 +25,11 @@ message Video {
 
 message Handle {
   enum Event {
-    CREATE = 0;
-    DELETE = 1;
+    Create = 0;
+    Delete = 1;
   }
 
   Event event = 1;
   string id = 2;
-  int32 user_id = 3;
+  int32 userId = 3;
 }

@@ -37,7 +37,7 @@ export default abstract class MicroServiceController<T> {
   ) {
     this.setProtoFile({ directory, file });
     this.setClient({ service, _package, port });
-    this.setProducer({ topic: service, kafkaMessageName });
+    this.setProducer({ topic: service, kafkaMessageName, _package });
   }
 
   private getSrcDirectory() {
@@ -87,9 +87,11 @@ export default abstract class MicroServiceController<T> {
   private setProducer({
     topic,
     kafkaMessageName,
+    _package,
   }: {
     topic: string;
     kafkaMessageName: string;
+    _package: string;
   }) {
     this.kafkaProducer = Producer.createWriteStream(
       {
@@ -101,7 +103,9 @@ export default abstract class MicroServiceController<T> {
     this.kafkaProducer.connect();
 
     const root = protobuf.loadSync(this.protoFile);
-    this.kafkaMessage = root.lookupType(kafkaMessageName);
+    this.kafkaMessage = root.lookupType(
+      _package ? `${_package}.${kafkaMessageName}` : kafkaMessageName
+    );
   }
 
   private setProtoFile({

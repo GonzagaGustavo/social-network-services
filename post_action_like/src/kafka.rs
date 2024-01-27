@@ -27,7 +27,7 @@ pub fn setup_consumer() {
             Some(Ok(msg)) => {
                 // Processa a mensagem recebida
                 if let Some(payload) = msg.payload() {
-                    println!("{:?}", payload.to_vec());
+                    println!("{:?}", payload);
 
                     match Handle::decode(payload) {
                         Ok(protobuf_obj) => {

@@ -41,13 +41,20 @@ export default class PostActionLike extends MicroServiceController<Like> {
     httpRequest: HttpRequest,
     res: Response<any, Record<string, any>>
   ): Promise<void> {
+    const enumMessage = this.kafkaMessage.getEnum("Event").Create;
     const playload = {
-      event: "DELETE",
+      event: enumMessage,
       id: "correto",
-      user_id: 12,
+      userId: 45,
     };
+    const errMessage = this.kafkaMessage.verify(playload);
+    if (errMessage) throw new Error(errMessage);
+
     const protobufObject = this.kafkaMessage.create(playload);
     const buffer = this.kafkaMessage.encode(protobufObject).finish();
+    // console.log(this.kafkaMessage.fields);
+    console.log("decoded", this.kafkaMessage.decode(buffer).toJSON());
+    // this.kafkaMessage.remove(this.kafkaMessage);
 
     const success = this.kafkaProducer.write(buffer);
 

@@ -63,15 +63,15 @@ pub mod handle {
         /// (if the ProtoBuf definition does not change) and safe for programmatic use.
         pub fn as_str_name(&self) -> &'static str {
             match self {
-                Event::Create => "CREATE",
-                Event::Delete => "DELETE",
+                Event::Create => "Create",
+                Event::Delete => "Delete",
             }
         }
         /// Creates an enum from field names used in the ProtoBuf definition.
         pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
             match value {
-                "CREATE" => Some(Self::Create),
-                "DELETE" => Some(Self::Delete),
+                "Create" => Some(Self::Create),
+                "Delete" => Some(Self::Delete),
                 _ => None,
             }
         }
