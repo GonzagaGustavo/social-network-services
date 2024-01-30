@@ -19,3 +19,16 @@ message SearchGet {
     int32 sort = 2;
     string search = 3;
 }
+
+message Handle {
+  enum Event {
+    CREATE = 0;
+    DELETE = 1;
+  }
+
+  Event event = 1;
+  string id = 2;
+  int32 userId = 3;
+  string search = 4;
+  int32 sort = 5;
+}

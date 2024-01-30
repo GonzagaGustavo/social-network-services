@@ -1,12 +1,12 @@
 import { KafkaConsumer } from "node-rdkafka";
 import logger from "./logger";
-import eventType from "./config/eventType";
+import eventType from "./config/protobuf";
 import consumer from "./consumers";
 
 type HandleMessage = {
   event: "CREATE" | "DELETE" | "UPDATE";
   id?: string;
-  user_id?: number;
+  userId?: number;
   search: string;
   sort?: number;
 };
@@ -25,7 +25,9 @@ kafkaConsumer
     kafkaConsumer.consume();
   })
   .on("data", (data) => {
-    const playload: HandleMessage = eventType.fromBuffer(data.value as any);
+    const playload: HandleMessage = eventType
+      .decode(data.value as any)
+      .toJSON() as HandleMessage;
 
     switch (playload.event) {
       case "CREATE":

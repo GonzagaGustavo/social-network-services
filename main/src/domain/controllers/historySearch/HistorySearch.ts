@@ -4,9 +4,9 @@ import MicroServiceController from "../../../interfaces/controller/microservice"
 import InvalidParamError from "../../../interfaces/errors/invalid-param";
 
 type HandleMessage = {
-  event: "CREATE" | "DELETE" | "UPDATE";
+  event: any;
   id?: string;
-  user_id?: number;
+  userId?: number;
   search?: string;
   sort?: number;
 };
@@ -60,9 +60,9 @@ export default class SearchHistoryController extends MicroServiceController<{
     }
 
     const playload: HandleMessage = {
-      event: "CREATE",
+      event: this.kafkaMessage.getEnum("Event").CREATE,
       search: httpRequest.body.search,
-      user_id: httpRequest.user.id,
+      userId: httpRequest.user.id,
     };
     const protobufObject = this.kafkaMessage.create(playload);
     const buffer = this.kafkaMessage.encode(protobufObject).finish();
@@ -99,9 +99,9 @@ export default class SearchHistoryController extends MicroServiceController<{
     }
 
     const playload: HandleMessage = {
-      event: "DELETE",
+      event: this.kafkaMessage.getEnum("Event").DELETE,
       id: httpRequest.params.id,
-      user_id: httpRequest.user.id,
+      userId: httpRequest.user.id,
     };
     const protobufObject = this.kafkaMessage.create(playload);
     const buffer = this.kafkaMessage.encode(protobufObject).finish();
