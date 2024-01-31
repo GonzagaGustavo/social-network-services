@@ -1,8 +1,8 @@
 use diesel::prelude::*;
 
 table! {
-    likes {
-        id -> Text,
+    likes (id) {
+        id -> Uuid,
         user_id -> Integer,
         post_id -> Text,
         created -> Timestamptz,
@@ -17,7 +17,7 @@ pub struct NewLikes {
 }
 
 #[derive(Debug, Queryable)]
-pub struct Likes {
+pub struct Like {
     pub id: String,
     pub user_id: i32,
     pub post_id: String,

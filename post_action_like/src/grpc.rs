@@ -3,6 +3,8 @@ use like::{LikeGet, LikeGetRequest, LikeGetResponse, Video};
 use tonic::Status;
 use tonic::{transport::Server, Request, Response};
 
+use crate::db::establish_connection;
+
 pub mod like {
     tonic::include_proto!("like");
 }
@@ -19,7 +21,13 @@ impl Like for LikeService {
         let req = request.into_inner();
 
         println!("user_id {}", req.user_id);
+        let connection = &mut establish_connection();
 
+        // let likes = likes::table
+        //     .select((likes::id, likes::user_id, likes::post_id, likes::created))
+        //     .limit(15)
+        //     .load(connection)
+        //     .expect("a");
         let like = LikeGet {
             id: "a".to_string(),
             title: "teste".to_string(),
@@ -28,8 +36,8 @@ impl Like for LikeService {
                 thumb: "URL teste".to_string(),
             }),
         };
-        let response = LikeGetResponse { likes: vec![like] };
 
+        let response = LikeGetResponse { likes: vec![like] };
         Ok(Response::new(response))
     }
 }

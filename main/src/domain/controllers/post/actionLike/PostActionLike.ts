@@ -52,9 +52,6 @@ export default class PostActionLike extends MicroServiceController<Like> {
 
     const protobufObject = this.kafkaMessage.create(playload);
     const buffer = this.kafkaMessage.encode(protobufObject).finish();
-    // console.log(this.kafkaMessage.fields);
-    console.log("decoded", this.kafkaMessage.decode(buffer).toJSON());
-    // this.kafkaMessage.remove(this.kafkaMessage);
 
     const success = this.kafkaProducer.write(buffer);
 

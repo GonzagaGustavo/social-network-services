@@ -31,7 +31,11 @@ pub fn setup_consumer() {
 
                     match Handle::decode(payload) {
                         Ok(protobuf_obj) => {
-                            println!("{:?}", protobuf_obj);
+                            if protobuf_obj.event == 1 {
+                                println!("{}", "Delete");
+                            } else if protobuf_obj.event == 0 {
+                                println!("{}", "Create")
+                            }
                         }
                         Err(err) => {
                             eprintln!("Erro: {}", err)
