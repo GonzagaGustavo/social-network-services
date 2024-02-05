@@ -1,10 +1,8 @@
-mod config {
-    pub mod event_type;
-}
 mod db;
 mod grpc;
 mod kafka;
 mod models;
+mod schema;
 
 use std::thread;
 
