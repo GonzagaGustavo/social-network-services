@@ -27,7 +27,7 @@ export default class PostActionLike extends MicroServiceController<Like> {
     httpRequest: HttpRequest,
     res: Response<any, Record<string, any>>
   ): Promise<void> {
-    this.client.get({ user_id: "1" }, (err, data) => {
+    this.client.get({ user_id: 1 }, (err, data) => {
       if (err) {
         console.error(err);
         return res.send({ err });
