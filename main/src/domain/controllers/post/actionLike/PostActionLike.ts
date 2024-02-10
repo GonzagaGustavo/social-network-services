@@ -44,8 +44,8 @@ export default class PostActionLike extends MicroServiceController<Like> {
     const enumMessage = this.kafkaMessage.getEnum("Event").Create;
     const playload = {
       event: enumMessage,
-      id: "correto",
-      userId: 45,
+      id: "1",
+      userId: 1,
     };
     const errMessage = this.kafkaMessage.verify(playload);
     if (errMessage) throw new Error(errMessage);
