@@ -3,7 +3,7 @@ import MissingParamError from "../../../interfaces/errors/missing-param";
 import { z } from "zod";
 
 interface VideoInput {
-  id?: number;
+  id?: string;
   thumb: string;
   v1080p: string;
   v720p: string;
@@ -12,7 +12,7 @@ interface VideoInput {
 }
 
 export default class Video {
-  _id?: number;
+  _id?: string;
   _thumb: string;
   _v1080p: string;
   _v720p: string;
@@ -28,12 +28,12 @@ export default class Video {
     this.v144p = v144p;
   }
 
-  get id(): number | undefined {
+  get id(): string | undefined {
     return this._id;
   }
 
-  set id(id: number | undefined) {
-    this._id = id ? z.number().parse(id) : id;
+  set id(id: string | undefined) {
+    this._id = id ? z.string().parse(id) : id;
   }
 
   get thumb(): string {

@@ -30,7 +30,7 @@ export default class PostUseCase {
     return await this.postRepository.getById(id);
   }
 
-  async remove(id: number): Promise<Post> {
+  async remove(id: string): Promise<Post> {
     if (!id) throw new MissingParamError("id");
     return await this.postRepository.remove(id);
   }

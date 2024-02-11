@@ -37,7 +37,7 @@ pub fn setup_consumer() {
                     match Handle::decode(payload) {
                         Ok(protobuf_obj) => {
                             if protobuf_obj.event == 1 {
-                                println!("{}", "Delete");
+                                delete(connection, protobuf_obj);
                             } else if protobuf_obj.event == 0 {
                                 create(connection, protobuf_obj);
                             }
@@ -73,4 +73,11 @@ fn create(connection: &mut PgConnection, data: Handle) {
         .expect("Erro ao inserir no banco de dados");
 }
 
-// fn delete(connection: &mut PgConnection) {}
+fn delete(connection: &mut PgConnection, data: Handle) {
+    use crate::schema::likes::dsl::*;
+
+    let filter = post_id.eq(data.id).and(user_id.eq(data.user_id));
+    diesel::delete(likes.filter(filter))
+        .execute(connection)
+        .expect("Erro ao deletar do banco de dados");
+}

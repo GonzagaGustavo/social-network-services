@@ -6,7 +6,7 @@ import Likes from "../Likes/Likes";
 import Video from "../Video/Video";
 
 interface PostInput {
-  id?: number;
+  id?: string;
   autor?: User;
   autor_id?: number;
   type: string;
@@ -14,16 +14,15 @@ interface PostInput {
   title: string;
   description: string;
   deslikes?: number;
-  favorites?: number;
   shares?: number;
   likes?: Likes[];
-  video_id?: number;
+  video_id?: string;
   video?: Video;
   created?: Date;
 }
 
 export default class Post {
-  _id?: number;
+  _id?: string;
   _autor?: User;
   _autor_id?: number;
   _type: string;
@@ -31,10 +30,9 @@ export default class Post {
   _title: string;
   _description: string;
   _deslikes: number = 0;
-  _favorites: number = 0;
   _shares: number = 0;
   _likes: Likes[] = [];
-  _video_id?: number;
+  _video_id?: string;
   _video?: Video;
   _created?: Date;
 
@@ -47,7 +45,6 @@ export default class Post {
     title,
     description,
     deslikes,
-    favorites,
     shares,
     likes,
     video_id,
@@ -62,7 +59,6 @@ export default class Post {
     this.title = title;
     this.description = description;
     this.deslikes = deslikes;
-    this.favorites = favorites;
     this.shares = shares;
     this.likes = likes;
     this.video_id = video_id;
@@ -70,12 +66,12 @@ export default class Post {
     this.created = created;
   }
 
-  get id(): number | undefined {
+  get id(): string | undefined {
     return this._id;
   }
 
-  set id(id: number | undefined) {
-    this._id = id ? z.number().parse(id) : id;
+  set id(id: string | undefined) {
+    this._id = id ? z.string().parse(id) : id;
   }
 
   get autor(): User | undefined {
@@ -148,16 +144,6 @@ export default class Post {
     }
   }
 
-  get favorites(): number {
-    return this._favorites;
-  }
-
-  set favorites(favorites: number) {
-    if (favorites) {
-      this._favorites = favorites;
-    }
-  }
-
   get shares(): number {
     return this._shares;
   }
@@ -178,11 +164,11 @@ export default class Post {
     }
   }
 
-  get video_id(): number | undefined {
+  get video_id(): string | undefined {
     return this._video_id;
   }
 
-  set video_id(video_id: number | undefined) {
+  set video_id(video_id: string | undefined) {
     this._video_id = video_id;
   }
 

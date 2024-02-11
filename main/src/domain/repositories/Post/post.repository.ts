@@ -6,7 +6,7 @@ import Video from "../../entities/Video/Video";
 
 export default class PostRepository extends Repository<Post> {
   protected rowToObject(row: any, objects: Post[]): void {
-    let obj = objects.find((u) => u.id === +row.c_id);
+    let obj = objects.find((u) => u.id === row.c_id);
     if (!obj) {
       obj = new Post({
         id: row.p_id,
@@ -20,7 +20,6 @@ export default class PostRepository extends Repository<Post> {
         type: row.p_type,
         title: row.p_title,
         description: row.p_description,
-        favorites: row.p_favorites,
         deslikes: row.p_deslikes,
         shares: row.p_shares,
         video_id: row.v_id,
@@ -46,7 +45,7 @@ export default class PostRepository extends Repository<Post> {
         title: o.title,
         description: o.description,
         type: o.type,
-        video_id: 0,
+        video_id: o.video_id,
       },
       select: {
         id: true,
@@ -86,7 +85,6 @@ export default class PostRepository extends Repository<Post> {
         description: o.description,
         type: o.type,
         deslikes: o.deslikes,
-        favorites: o.favorites,
         shares: o.shares,
       },
       where: {
@@ -97,7 +95,7 @@ export default class PostRepository extends Repository<Post> {
     return new Post(updated);
   }
 
-  public async remove(id: number): Promise<Post> {
+  public async remove(id: string): Promise<Post> {
     const deleted = await orm.post.delete({
       where: {
         id: id,

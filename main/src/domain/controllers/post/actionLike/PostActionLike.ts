@@ -27,7 +27,7 @@ export default class PostActionLike extends MicroServiceController<Like> {
     httpRequest: HttpRequest,
     res: Response<any, Record<string, any>>
   ): Promise<void> {
-    this.client.get({ user_id: 1 }, (err, data) => {
+    this.client.get({ user_id: httpRequest.user.id }, (err, data) => {
       if (err) {
         console.error(err);
         return res.send({ err });
@@ -44,8 +44,8 @@ export default class PostActionLike extends MicroServiceController<Like> {
     const enumMessage = this.kafkaMessage.getEnum("Event").Create;
     const playload = {
       event: enumMessage,
-      id: "1",
-      userId: 1,
+      id: httpRequest.body.id,
+      userId: httpRequest.user.id,
     };
     const errMessage = this.kafkaMessage.verify(playload);
     if (errMessage) throw new Error(errMessage);
@@ -75,5 +75,30 @@ export default class PostActionLike extends MicroServiceController<Like> {
   async DELETE(
     httpRequest: HttpRequest,
     res: Response<any, Record<string, any>>
-  ): Promise<void> {}
+  ): Promise<void> {
+    const enumMessage = this.kafkaMessage.getEnum("Event").Delete;
+    const playload = {
+      event: enumMessage,
+      id: httpRequest.query.id,
+      userId: httpRequest.user.id,
+    };
+    const errMessage = this.kafkaMessage.verify(playload);
+    if (errMessage) throw new Error(errMessage);
+
+    const protobufObject = this.kafkaMessage.create(playload);
+    const buffer = this.kafkaMessage.encode(protobufObject).finish();
+
+    const success = this.kafkaProducer.write(buffer);
+
+    if (success) {
+      const response = this.res.ok({ success });
+      res.status(response.statusCode).send(response.body);
+      return;
+    } else {
+      const response = this.res.badRequest(
+        new Error("Something went wrong...")
+      );
+      res.status(response.statusCode).send(response.body);
+    }
+  }
 }

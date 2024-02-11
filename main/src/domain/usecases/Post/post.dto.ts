@@ -10,7 +10,7 @@ export interface CreatePostInput {
   video?: Video;
 }
 export interface UpdatePostInput {
-  id: number;
+  id: string;
   type: string;
   title: string;
   description: string;
