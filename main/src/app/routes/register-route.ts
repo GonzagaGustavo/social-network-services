@@ -90,12 +90,13 @@ export default class RegisterRoute {
     const _controller: any = controller;
     return async (req: Request, res: Response) => {
       const httpRequest: HttpRequest = {
+        headers: req.headers,
         body: req.body,
         params: req.params,
         query: req.query,
         user: req.user,
       };
-      await _controller[routeFunctionName](httpRequest, res);
+      await _controller[routeFunctionName](httpRequest, res, req);
     };
   }
 }

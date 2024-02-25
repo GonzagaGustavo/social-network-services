@@ -1,12 +1,14 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import InvalidMethodError from "../errors/invalid-method";
 import UnauthorizedError from "../errors/unauthorized-error";
+import { IncomingHttpHeaders } from "http";
 
 export type ResponseObject = {
   statusCode: number;
   body: any;
 };
 export type HttpRequest = {
+  headers: IncomingHttpHeaders;
   body: any;
   params: any;
   query: any;
@@ -91,18 +93,22 @@ export default abstract class Controller<UseCase> {
 
   abstract GET(
     httpRequest: HttpRequest,
-    res: Response<any, Record<string, any>>
+    res: Response<any, Record<string, any>>,
+    req: Request
   ): Promise<void>;
   abstract POST(
     httpRequest: HttpRequest,
-    res: Response<any, Record<string, any>>
+    res: Response<any, Record<string, any>>,
+    req: Request
   ): Promise<void>;
   abstract PUT(
     httpRequest: HttpRequest,
-    res: Response<any, Record<string, any>>
+    res: Response<any, Record<string, any>>,
+    req: Request
   ): Promise<void>;
   abstract DELETE(
     httpRequest: HttpRequest,
-    res: Response<any, Record<string, any>>
+    res: Response<any, Record<string, any>>,
+    req: Request
   ): Promise<void>;
 }

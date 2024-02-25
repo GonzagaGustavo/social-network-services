@@ -1,3 +1,5 @@
 import { urlencoded } from "express";
 
-export default urlencoded({ extended: false });
+export default urlencoded({
+  extended: false,
+});

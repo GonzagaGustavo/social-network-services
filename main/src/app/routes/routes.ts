@@ -5,6 +5,7 @@ import UserController from "../../domain/controllers/user/User";
 import AuthenticationController from "../../domain/controllers/authentication/Authentication";
 import SearchHistoryController from "../../domain/controllers/historySearch/HistorySearch";
 import PostActionLike from "../../domain/controllers/post/actionLike/PostActionLike";
+import PostController from "../../domain/controllers/post/Post";
 
 export default (router: Router) => {
   const registerRoute = new RegisterRoute(router);
@@ -27,6 +28,11 @@ export default (router: Router) => {
   registerRoute.addRoute({
     route: "/history/search",
     controller: new SearchHistoryController(),
+  });
+
+  registerRoute.addRoute({
+    route: "/post",
+    controller: new PostController(),
   });
 
   registerRoute.addRoute({
